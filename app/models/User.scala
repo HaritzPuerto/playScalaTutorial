@@ -11,4 +11,6 @@ object User {
     User("Josh", "Josh"),
     User("Dave", "Dave")
   )
+  def findAll = users.toList
+
 }
