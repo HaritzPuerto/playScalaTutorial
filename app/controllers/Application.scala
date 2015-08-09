@@ -40,4 +40,31 @@ class Application @Inject()(val messagesApi: MessagesApi) extends Controller wit
     )
   }
 
+  def loginPage = Action {
+    Ok(views.html.users.login(userForm))
+  }
+
+  def login = Action { implicit request =>
+    val newUser = userForm.bindFromRequest()
+    newUser.fold(
+      hasErrors = { form =>
+        Redirect(routes.Application.loginPage())
+      },
+      success = { user =>
+        if(User.login(user)){
+          Redirect(routes.Application.show(user.username))
+        } else {
+          Redirect(routes.Application.loginPage())
+        }
+      }
+    )
+  }
+
+
+  def show(username: String) = Action { implicit request =>
+    User.findByUsername(username).map { user =>
+      Ok(views.html.users.user(user))
+    }.getOrElse(NotFound)
+  }
+
 }
